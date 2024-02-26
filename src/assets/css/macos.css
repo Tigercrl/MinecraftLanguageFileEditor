@@ -1,0 +1,11 @@
+body, html {
+    background: var(--main-bg-color);
+}
+
+.window-buttons {
+    display: none !important;
+}
+
+.search {
+    width: calc(100% - 70px) !important;
+}
