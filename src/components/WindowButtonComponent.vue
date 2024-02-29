@@ -1,9 +1,12 @@
 <script setup>
 import {exit} from '@tauri-apps/api/process'
-import {getCurrent} from "@tauri-apps/api/window";
+import {appWindow, getCurrent} from "@tauri-apps/api/window";
 import {ref} from "vue";
+import {os} from "@tauri-apps/api";
 
 const maximizeButtonIcon = ref();
+
+let style;
 
 async function exitApp() {
   await exit();
@@ -24,6 +27,25 @@ async function maximizeApp() {
     await getCurrent().maximize();
   }
 }
+
+// MacOS全屏搜索框宽度修复
+appWindow.onResized(async () => {
+  if (await os.type() === "Darwin") {
+    if (style === undefined) {
+      style = document.createElement("style");
+      document.body.appendChild(style);
+    }
+    if (await getCurrent().isMaximized()) {
+      style.innerHTML = `
+      .search {
+        width: calc(100% - 10px) !important;
+      }
+      `;
+    } else {
+      style.innerHTML = "";
+    }
+  }
+});
 </script>
 
 <template>

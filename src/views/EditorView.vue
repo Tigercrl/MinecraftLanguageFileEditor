@@ -1,29 +1,66 @@
 <script setup>
-import {closeFile, editedFile, exportFile, openedFileContent} from "../main.js";
+import {
+  closeFile,
+  exportFile,
+  originalFileContent,
+  translatedFileContent
+} from "../main.js";
 import SidebarComponent from "../components/SidebarComponent.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
+import {diffChars} from "diff";
 
-let keyList = Object.keys(openedFileContent);
-const searchElement = ref();
+let errorKeys = [];
+let keyList = getKeyList();
 let selectedKey = keyList[0];
+const searchElement = ref();
+const diffInfo = ref();
 
-function search() {
-  keyList = [];
-  for (const key of Object.keys(openedFileContent)) {
-    if (key.includes(searchElement.value.value) || openedFileContent[key].toLowerCase().includes(searchElement.value.value.toLowerCase()) || editedFile[key].toLowerCase().includes(searchElement.value.value.toLowerCase())) {
-      keyList.push(key);
-    }
-  }
+function getKeyList() {
+  let tempList = Object.keys(originalFileContent).concat(Object.keys(translatedFileContent));
+  tempList = tempList.filter((item, index) => {
+    return tempList.indexOf(item) === index && !errorKeys.includes(item);
+  });
+  return errorKeys.concat(tempList);
 }
+
+function refreshKeyList() {
+  keyList = getKeyList().filter(item => {
+    return item.includes(searchElement.value.value) ||
+        (originalFileContent[item] !== undefined && originalFileContent[item].toLowerCase().includes(searchElement.value.value.toLowerCase())) ||
+        (translatedFileContent[item] !== undefined && translatedFileContent[item].toLowerCase().includes(searchElement.value.value.toLowerCase()));
+  });
+}
+
+function updateDiff() {
+  diffInfo.value.innerHTML = "";
+  diffChars(originalFileContent[selectedKey], translatedFileContent[selectedKey]).forEach((part) => {
+    const color = part.added ? 'green' :
+        part.removed ? 'red' : 'gray';
+    const span = document.createElement('span');
+    span.classList.add("diff-color-" + color);
+    span.appendChild(document.createTextNode(part.value));
+    diffInfo.value.appendChild(span);
+  })
+}
+
+defineExpose({
+  errorKeys,
+  refreshKeyList
+});
+
+onMounted(() => {
+  selectedKey = keyList[0];
+});
 </script>
 
 <template>
   <div class="container">
     <div class="sidebar">
-      <input class="search" type="text" placeholder="搜索" @input="search();$forceUpdate()" ref="searchElement"/>
+      <input class="search" type="text" placeholder="搜索" @input="refreshKeyList();$forceUpdate()"
+             ref="searchElement"/>
       <div class="translations" ref="translations">
         <SidebarComponent v-for="key of keyList" :my-key="key" :selected-key="selectedKey"
-                          @select="selectedKey = key;$forceUpdate()"/>
+                          @select="selectedKey = key;updateDiff();$forceUpdate()"/>
       </div>
       <div class="buttons">
         <button @click="exportFile">导出文件</button>
@@ -33,10 +70,11 @@ function search() {
     <div class="editor">
       <div class="editor-info">
         <p>键：<span class="font-minecraft">{{ selectedKey }}</span></p>
-        <p>原文本：<span class="font-minecraft">{{ openedFileContent[selectedKey] }}</span></p>
+        <p>原文本：<span class="font-minecraft">{{ originalFileContent[selectedKey] }}</span></p>
+        <p>Diff：<span ref="diffInfo" class="font-minecraft"></span></p>
       </div>
-      <textarea placeholder="请输入翻译..." :value="editedFile[selectedKey]"
-                @input="editedFile[selectedKey] = $event.target.value"></textarea>
+      <textarea placeholder="请输入翻译..." :value="translatedFileContent[selectedKey]"
+                @input="translatedFileContent[selectedKey] = $event.target.value;updateDiff()"></textarea>
     </div>
   </div>
 </template>

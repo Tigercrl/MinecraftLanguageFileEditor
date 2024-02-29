@@ -7,5 +7,5 @@ body, html {
 }
 
 .search {
-    width: calc(100% - 70px) !important;
+    width: calc(100% - 65px) !important;
 }

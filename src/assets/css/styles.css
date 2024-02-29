@@ -1,80 +1,90 @@
 :root {
-  --main-bg-color: #ffffff;
-  --font-sans: "MiSans VF";
-  --font-minecraft: "Minecraft AE Pixel";
-  --border-color-lightgray: #ddd;
-  --border-color-gray: #aaa;
-  --text-color: #313131;
-  --text-color-light: #fff;
-  --text-color-gray: #555;
-  --primary-color: #4da3f8;
-  --primary-color-dark: #3d9ded;
-  --selected-bg-color: #eee;
-  --shadow-primary-color: 0 5px 10px rgba(77, 163, 248, .5);
-  --shadow-smallest: 0px 2px 4px rgba(0, 0, 0, .1);
-  --shadow-extra-small: 0px 4px 8px rgba(0, 0, 0, .12);
-  --shadow-small: 0 5px 10px rgba(0, 0, 0, .12);
-  --shadow-medium: 0 8px 30px rgba(0, 0, 0, .12);
-  --shadow-large: 0 30px 60px rgba(0, 0, 0, .12);
+    --main-bg-color: #ffffff;
+    --font-sans: "MiSans VF";
+    --font-minecraft: "Minecraft AE Pixel";
+    --border-color-lightgray: #ddd;
+    --border-color-gray: #aaa;
+    --text-color: #313131;
+    --text-color-light: #fff;
+    --text-color-gray: #555;
+    --primary-color: #4da3f8;
+    --primary-color-dark: #3d9ded;
+    --error-color: #ff0000;
+    --error-color-dark: #d70000;
+    --selected-bg-color: #e3eef8;
+    --error-selected-bg-color: #f8e3e3;
+    --shadow-primary-color: 0 5px 10px rgba(77, 163, 248, .5);
+    --shadow-error-color: 0 5px 10px rgba(248, 77, 77, 0.5);
+    --shadow-smallest: 0px 2px 4px rgba(0, 0, 0, .1);
+    --shadow-extra-small: 0px 4px 8px rgba(0, 0, 0, .12);
+    --shadow-small: 0 5px 10px rgba(0, 0, 0, .12);
+    --shadow-medium: 0 8px 30px rgba(0, 0, 0, .12);
+    --shadow-large: 0 30px 60px rgba(0, 0, 0, .12);
 }
 
 * {
-  font-family: var(--font-sans);
+    font-family: var(--font-sans);
 }
 
 body, html, #app {
-  overflow: hidden;
-  height: 100%;
-  width: 100%;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
 }
 
 body {
-  margin: 0;
+    margin: 0;
 }
 
 hr {
-  border: none;
-  height: 2px;
-  border-radius: 1px;
-  background-color: var(--border-color-gray);
+    border: none;
+    height: 2px;
+    border-radius: 1px;
+    background-color: var(--border-color-gray);
 }
 
 .font-minecraft {
-  font-family: var(--font-minecraft);
+    font-family: var(--font-minecraft);
 }
 
 #app {
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  border: none;
-  background: var(--main-bg-color);
-}
-
-.nav {
-  position: absolute;
-  z-index: 999;
-  width: 100%;
-  padding: 10px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border: none;
+    background: var(--main-bg-color);
 }
 
 a {
-  color: var(--text-color);
-  transition: 0.1s ease-in-out;
+    color: var(--text-color);
+    transition: 0.1s ease-in-out;
 }
 
 a:hover {
-  color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.diff-color-green {
+    color: limegreen;
+}
+
+.diff-color-gray {
+    color: gray;
+}
+
+.diff-color-red {
+    color: orangered;
+    text-decoration: line-through;
 }
 
 @font-face {
-  font-family: "MiSans VF";
-  src: url("/fonts/MiSans VF.ttf") format("truetype");
+    font-family: "MiSans VF";
+    src: url("/fonts/MiSans VF.ttf") format("truetype");
 }
 
 @font-face {
-  font-family: "Minecraft AE Pixel";
-  src: url("/fonts/Minecraft AE Pixel.ttf") format("truetype");
+    font-family: "Minecraft AE Pixel";
+    src: url("/fonts/Minecraft AE Pixel.ttf") format("truetype");
 }

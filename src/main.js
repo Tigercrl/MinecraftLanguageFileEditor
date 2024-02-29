@@ -5,10 +5,11 @@ import router from "./router/main.js";
 import {invoke, os} from "@tauri-apps/api";
 import {confirm, message, open, save} from "@tauri-apps/api/dialog";
 
-let openedFileName;
-let openedFilePath;
-export let openedFileContent;
-export let editedFile;
+export let originalFileName;
+export let translatedFileName;
+let defaultFileSavingPath;
+export let originalFileContent;
+export let translatedFileContent;
 
 async function main() {
     if (await os.type() === "Darwin") {
@@ -20,31 +21,51 @@ async function main() {
     }
 }
 
-export async function importFile() {
+export async function importOriginalFile() {
     const path = await open({
-        title: "导入语言文件", filters: [{
+        title: "导入原始语言文件", filters: [{
             name: "MinecraftLanguageFile", extensions: ["json"]
         }]
     });
-    openedFilePath = path;
-    openedFileName = path.substring(path.lastIndexOf("/") + 1);
-    openedFileContent = JSON.parse(await invoke("read_file", {path: path}));
-    editedFile = JSON.parse(JSON.stringify(openedFileContent));
-    await router.push("/editor");
+    if (defaultFileSavingPath === undefined) defaultFileSavingPath = path;
+    originalFileName = path.substring(path.lastIndexOf("/") + 1);
+    const content = await invoke("read_file", {path: path});
+    originalFileContent = JSON.parse(content);
+    if (translatedFileContent === undefined) translatedFileContent = JSON.parse(JSON.stringify(originalFileContent));
+}
+
+export async function importTranslatedFile() {
+    const path = await open({
+        title: "导入翻译语言文件", filters: [{
+            name: "MinecraftLanguageFile", extensions: ["json"]
+        }]
+    });
+    defaultFileSavingPath = path;
+    translatedFileName = path.substring(path.lastIndexOf("/") + 1);
+    const content = await invoke("read_file", {path: path});
+    translatedFileContent = JSON.parse(content);
+}
+
+export async function editor() {
+    if (originalFileContent !== undefined) await router.push("/editor");
 }
 
 export async function closeFile() {
     if (await confirm("未导出的更改将会丢失，是否确认关闭？", {title: "关闭文件", type: "warning"})) {
-        openedFilePath = openedFileName = openedFileContent = editedFile = undefined;
+        clearFile();
         await router.push("/");
     }
 }
 
+export function clearFile() {
+    originalFileName = translatedFileName = defaultFileSavingPath = originalFileContent = translatedFileContent = undefined;
+}
+
 export async function exportFile() {
-    const text = JSON.stringify(editedFile, null, 4);
+    const text = JSON.stringify(translatedFileContent, null, 4);
     const arrayBuffer = new TextEncoder().encode(text);
     const path = await save({
-        defaultPath: openedFilePath, title: "导出语言文件", filters: [{
+        defaultPath: defaultFileSavingPath, title: "导出语言文件", filters: [{
             name: "MinecraftLanguageFile", extensions: ["json"]
         }]
     });
@@ -70,7 +91,7 @@ async function saveFile(path, arrayBuffer, progressCallback) {
     return true;
 }
 
-main();
+main().then(null);
 const app = createApp(App);
 app.use(router);
 app.mount("#app");
