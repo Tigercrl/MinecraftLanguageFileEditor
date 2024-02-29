@@ -1,6 +1,6 @@
 [package]
 name = "minecraft-language-file-editor"
-version = "1.0.0"
+version = "1.0.1"
 description = "An editor for Minecraft language files"
 authors = ["Tigercrl"]
 edition = "2021"
